@@ -2,9 +2,8 @@ package kz.qazaqpay.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
@@ -14,27 +13,22 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI qazaqPayOpenAPI() {
-        final String securitySchemeName = "Bearer Authentication";
-        
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("QazaqPay Banking Super App API")
-                        .description("Comprehensive REST API for QazaqPay - Modern Banking Solution")
-                        .version("v1.0.0")
+                        .title("QazaqPay Bank API")
+                        .version("1.0")
+                        .description("Banking API with JWT Authentication")
                         .contact(new Contact()
-                                .name("QazaqPay Development Team")
-                                .email("dev@qazaqpay.kz")
-                                .url("https://qazaqpay.kz"))
-                        .license(new License()
-                                .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                                .name("QazaqPay Team")
+                                .email("support@qazaqpay.kz")))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
-                                .name(securitySchemeName)
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                        .description("Enter JWT token")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
 }
