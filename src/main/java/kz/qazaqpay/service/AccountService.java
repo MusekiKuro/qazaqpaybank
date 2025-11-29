@@ -48,7 +48,8 @@ public class AccountService {
     }
 
     public List<AccountResponse> getUserAccounts(User user) {
-        return accountRepository.findByUserAndActiveTrue(user).stream()
+        // ИСПРАВЛЕНИЕ: Передаем ID пользователя, а не весь объект
+        return accountRepository.findByUserIdAndActiveTrue(user.getId()).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

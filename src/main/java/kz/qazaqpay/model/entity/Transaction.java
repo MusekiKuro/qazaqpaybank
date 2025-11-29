@@ -40,6 +40,7 @@ public class Transaction {
     @Column(nullable = false)
     private TransactionType type;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status = TransactionStatus.COMPLETED;
@@ -47,6 +48,7 @@ public class Transaction {
     @Column(length = 500)
     private String description;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean suspicious = false;
 

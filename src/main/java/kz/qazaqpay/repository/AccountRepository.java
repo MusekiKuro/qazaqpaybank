@@ -11,7 +11,12 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByAccountNumber(String accountNumber);
+    
+    // Старые методы (можно оставить, но лучше не использовать)
     List<Account> findByUser(User user);
-    List<Account> findByUserAndActiveTrue(User user);
+    
+    // НОВЫЙ ПРАВИЛЬНЫЙ МЕТОД: Spring Data сам поймет, что нужно искать по user.id
+    List<Account> findByUserIdAndActiveTrue(Long userId);
+    
     Boolean existsByAccountNumber(String accountNumber);
 }

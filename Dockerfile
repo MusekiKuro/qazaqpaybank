@@ -2,15 +2,19 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-COPY gradle gradle
-COPY gradlew .
+# Копируем только необходимые файлы для сборки
 COPY build.gradle .
 COPY settings.gradle .
+COPY gradle gradle
+COPY gradlew .
 
-RUN ./gradlew dependencies --no-daemon
+# Делаем gradlew исполняемым
+RUN chmod +x gradlew
 
+# Копируем исходники
 COPY src src
 
+# Собираем проект
 RUN ./gradlew bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine

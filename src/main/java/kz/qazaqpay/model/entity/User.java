@@ -43,15 +43,18 @@ public class User implements UserDetails {
     private String phoneNumber;
 
     @Column(nullable = false, unique = true, length = 12)
-    private String iin; // ИИН (Individual Identification Number)
+    private String iin;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean enabled = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean mfaEnabled = true;
 

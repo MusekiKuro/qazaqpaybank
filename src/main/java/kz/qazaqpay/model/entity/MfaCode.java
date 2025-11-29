@@ -28,6 +28,7 @@ public class MfaCode {
     @Column(nullable = false, length = 6)
     private String code;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean used = false;
 
