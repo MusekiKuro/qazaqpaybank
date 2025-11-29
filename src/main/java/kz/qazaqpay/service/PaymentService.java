@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -37,21 +36,27 @@ public class PaymentService {
         return processPayment(request, user, Transaction.TransactionType.PAYMENT_UTILITIES);
     }
 
-    // PaymentService.java, метод processPayment
-
     private TransferResponse processPayment(PaymentRequest request, User user,
                                             Transaction.TransactionType type) {
-        
-        // НОВОЕ ИСПРАВЛЕНИЕ: Проверка на отрицательную сумму
+        // 1. Валидация суммы (FIXED)
         if (request.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Payment amount must be positive");
         }
-        
+
+        // 2. Поиск счета (ВОССТАНОВЛЕНО)
         Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        // ... (остальной код)
+        // 3. Проверки безопасности и баланса (ВОССТАНОВЛЕНО)
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access to account");
+        }
 
+        if (account.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        // 4. Логика платежа
         boolean suspicious = fraudDetectionService.isSuspicious(request.getAmount());
 
         account.setBalance(account.getBalance().subtract(request.getAmount()));

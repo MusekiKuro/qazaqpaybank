@@ -7,7 +7,6 @@ import kz.qazaqpay.model.dto.request.LoginRequest;
 import kz.qazaqpay.model.dto.request.MfaVerifyRequest;
 import kz.qazaqpay.model.dto.request.RegisterRequest;
 import kz.qazaqpay.model.dto.response.AuthResponse;
-import kz.qazaqpay.model.dto.response.MfaResponse;
 import kz.qazaqpay.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +27,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "User login", description = "Authenticate user and generate MFA code")
-    public ResponseEntity<MfaResponse> login(@Valid @RequestBody LoginRequest request) {
+    @Operation(summary = "User login", description = "Authenticate user and generate MFA code (or token if MFA disabled)")
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest request) {
+        // ИЗМЕНЕНО: Возвращаем Object, так как это может быть MfaResponse или AuthResponse
         return ResponseEntity.ok(authService.login(request));
     }
 

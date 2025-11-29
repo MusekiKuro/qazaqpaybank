@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,21 +27,30 @@ public class TransferService {
     private final TransactionRepository transactionRepository;
     private final FraudDetectionService fraudDetectionService;
 
-    // TransferService.java, метод transfer
-
     @Transactional
     public TransferResponse transfer(TransferRequest request, User user) {
-        
-        // НОВОЕ ИСПРАВЛЕНИЕ: Проверка на отрицательную сумму
+        // 1. Валидация суммы (FIXED)
         if (request.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Transfer amount must be positive");
         }
-        
+
+        // 2. Поиск счетов (ВОССТАНОВЛЕНО)
         Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
                 .orElseThrow(() -> new RuntimeException("Source account not found"));
 
-        // ... (остальной код)
+        Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
+                .orElseThrow(() -> new RuntimeException("Destination account not found"));
 
+        // 3. Проверки безопасности и баланса (ВОССТАНОВЛЕНО)
+        if (!fromAccount.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access to source account");
+        }
+
+        if (fromAccount.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        // 4. Логика перевода
         boolean suspicious = fraudDetectionService.isSuspicious(request.getAmount());
 
         fromAccount.setBalance(fromAccount.getBalance().subtract(request.getAmount()));
