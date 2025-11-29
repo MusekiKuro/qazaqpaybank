@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/qazaqpay_db
+    username: qazaqpay_user
+    password: qazaqpay_pass_2025

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qazaqpay-postgres
+    environment:
+      POSTGRES_DB: qazaqpay_db
+      POSTGRES_USER: qazaqpay_user
+      POSTGRES_PASSWORD: qazaqpay_pass_2025
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - qazaqpay-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qazaqpay_user -d qazaqpay_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qazaqpay-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qazaqpay-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - qazaqpay-network
+
+volumes:
+  postgres_data:
+
+networks:
+  qazaqpay-network:
+    driver: bridge

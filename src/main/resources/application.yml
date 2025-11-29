@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: qazaqpay
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/qazaqpay_db
+    username: qazaqpay_user
+    password: qazaqpay_pass_2025
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  sql:
+    init:
+      mode: always
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+jwt:
+  secret: QazaqPaySecretKey2025SuperSecureJWTTokenGenerationKeyForBankingApplication
+  expiration: 86400000  # 24 hours in milliseconds
+
+mfa:
+  code-length: 6
+  expiration: 300000  # 5 minutes in milliseconds
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
