@@ -28,21 +28,20 @@ public class TransferService {
     private final TransactionRepository transactionRepository;
     private final FraudDetectionService fraudDetectionService;
 
+    // TransferService.java, метод transfer
+
     @Transactional
     public TransferResponse transfer(TransferRequest request, User user) {
+        
+        // НОВОЕ ИСПРАВЛЕНИЕ: Проверка на отрицательную сумму
+        if (request.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Transfer amount must be positive");
+        }
+        
         Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
                 .orElseThrow(() -> new RuntimeException("Source account not found"));
 
-        Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
-                .orElseThrow(() -> new RuntimeException("Destination account not found"));
-
-        if (!fromAccount.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized access to source account");
-        }
-
-        if (fromAccount.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new RuntimeException("Insufficient funds");
-        }
+        // ... (остальной код)
 
         boolean suspicious = fraudDetectionService.isSuspicious(request.getAmount());
 

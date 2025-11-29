@@ -37,18 +37,20 @@ public class PaymentService {
         return processPayment(request, user, Transaction.TransactionType.PAYMENT_UTILITIES);
     }
 
+    // PaymentService.java, метод processPayment
+
     private TransferResponse processPayment(PaymentRequest request, User user,
                                             Transaction.TransactionType type) {
+        
+        // НОВОЕ ИСПРАВЛЕНИЕ: Проверка на отрицательную сумму
+        if (request.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Payment amount must be positive");
+        }
+        
         Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        if (!account.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized access to account");
-        }
-
-        if (account.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new RuntimeException("Insufficient funds");
-        }
+        // ... (остальной код)
 
         boolean suspicious = fraudDetectionService.isSuspicious(request.getAmount());
 

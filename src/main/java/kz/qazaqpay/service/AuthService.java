@@ -63,7 +63,7 @@ public class AuthService {
     }
 
     @Transactional
-    public MfaResponse login(LoginRequest request) {
+    public Object login(LoginRequest request) { // Изменяем тип возвращаемого значения на Object или создаем общий DTO
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -73,7 +73,16 @@ public class AuthService {
 
         if (!user.getMfaEnabled()) {
             String token = jwtUtil.generateToken(user);
-            throw new RuntimeException("MFA disabled. Token: " + token);
+            // ПРАВИЛЬНОЕ ИСПРАВЛЕНИЕ: ВОЗВРАЩАЕМ AuthResponse С ТОКЕНОМ
+            return AuthResponse.builder()
+                    .token(token)
+                    .type("Bearer")
+                    .userId(user.getId())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .message("Login successful. MFA is disabled.")
+                    .build();
         }
 
         return mfaService.generateMfaCode(user);
